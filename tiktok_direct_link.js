@@ -31,21 +31,11 @@
 })();
 
 function stopVideo(){
-    let video = document.getElementsByTagName("video")[0];
-    if(video instanceof HTMLVideoElement){
-        video.pause()
-    }
+    $("video").trigger("pause")
 }
 
 function loopVideo(){
-    const video = document.getElementsByTagName("video")[0];
-    if(video instanceof HTMLVideoElement && typeof video.loop === 'boolean'){
-        video.loop = true
-    }else if(video instanceof HTMLVideoElement){
-        video.addEventListener('ended', function () {
-            this.play();
-        }, false);
-    }
+    $("video").prop("loop", true)
 }
 
 function parseLink(document){
