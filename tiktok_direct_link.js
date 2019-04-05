@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         TikTok Direct Link
-// @namespace    http://tampermonkey.net/
-// @version      0.1
+// @namespace    https://github.com/DumbCodeGenerator/TikTok_Direct_Link
+// @version      0.2
 // @description  Получает ссылку на видос без вотермарки
-// @author       krogon500
+// @author       DumbCodeGenerator
 // @match        *://*.tiktok.com/*
 // @match        *://*.muscdn.com/*
 // @require      http://code.jquery.com/jquery-latest.js
