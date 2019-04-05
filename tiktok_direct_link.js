@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         TikTok Direct Link
-// @homepage    https://github.com/DumbCodeGenerator/TikTok_Direct_Link
+// @homepage     https://github.com/DumbCodeGenerator/TikTok_Direct_Link
 // @version      0.1
 // @description  Получает ссылку на видос без вотермарки
 // @author       DumbCodeGenerator
@@ -19,7 +19,7 @@
         getLink(false)
     }else if(loc.includes('m.tiktok.com/v/')){
         getLink(true)
-    }else if(loc.includes('/share/user/')){
+    }else{
         const pushState = history.pushState;
         history.pushState = function () {
             pushState.apply(history, arguments);
