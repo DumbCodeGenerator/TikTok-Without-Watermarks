@@ -1,3 +1,15 @@
+// ==UserScript==
+// @name         TikTok Direct Link
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  Получает ссылку на видос без вотермарки
+// @author       krogon500
+// @match        *://*.tiktok.com/*
+// @match        *://*.muscdn.com/*
+// @require      http://code.jquery.com/jquery-latest.js
+// @grant        none
+// ==/UserScript==
+
 (function() {
     'use strict';
     const loc = location.href;
