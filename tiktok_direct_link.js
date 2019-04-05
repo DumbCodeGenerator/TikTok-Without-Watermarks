@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TikTok Direct Link
-// @namespace    https://github.com/DumbCodeGenerator/TikTok_Direct_Link
-// @version      0.2
+// @homepage    https://github.com/DumbCodeGenerator/TikTok_Direct_Link
+// @version      0.1
 // @description  Получает ссылку на видос без вотермарки
 // @author       DumbCodeGenerator
 // @match        *://*.tiktok.com/*
