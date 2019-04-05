@@ -22,12 +22,19 @@
         getLink(true)
     }else{
         const pushState = history.pushState;
+        const replaceState = history.replaceState;
         history.pushState = function () {
             pushState.apply(history, arguments);
             if(location.href.includes('/share/video/')){
                 getLink(false)
             }
         };
+        history.replaceState = function () {
+            replaceState.apply(history, arguments);
+            if(location.href.includes('/share/video/')){
+                getLink(false)
+            }
+        }
     }
 })();
 
