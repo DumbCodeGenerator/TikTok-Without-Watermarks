@@ -16,18 +16,30 @@
     if(loc.includes('muscdn.com')){
         loopVideo()
     }else if(loc.includes('/share/video/')){
-        getLink(false)
+        getShareLink()
     }else if(loc.includes('m.tiktok.com/v/')){
         jQuery.noConflict(true);
         getLink(true)
     }else{
+        let observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if(mutation.addedNodes.length > 0 && location.href.includes('/share/video/')){
+                    getLink(false)
+                }
+            });
+        });
+
+        // configuration of the observer:
+        let config = { attributes: false, childList: true, characterData: false };
+
+        // pass in the target node, as well as the observer options
+        observer.observe($('.ReactModalPortal').get(0), config);
+
         const pushState = history.pushState;
         const replaceState = history.replaceState;
         history.pushState = function () {
             pushState.apply(history, arguments);
-            if(location.href.includes('/share/video/')){
-                getLink(false)
-            }
+
         };
         history.replaceState = function () {
             replaceState.apply(history, arguments);
@@ -38,10 +50,6 @@
     }
 })();
 
-function stopVideo(){
-    $("video").trigger("pause")
-}
-
 function loopVideo(){
     $("video").prop("loop", true)
 }
@@ -49,33 +57,33 @@ function loopVideo(){
 function parseLink(document){
     const docText = $(document).text();
 
-    const startIndex = docText.indexOf("play_addr");
+    const startIndex = docText.indexOf("play_addr") + 11;
     const length = (docText.lastIndexOf("},\"cover\"") + 1) - startIndex;
     const play_addr = docText.substr(startIndex, length);
 
-    const uriStart = play_addr.lastIndexOf("\"uri\":\"") + 7;
-    const uriLength = play_addr.lastIndexOf("\"}") - uriStart;
-    const uri = play_addr.substr(uriStart, uriLength);
+    return JSON.parse(play_addr)['url_list'][2];
+}
 
-    return `http://api2.musical.ly/aweme/v1/play/?video_id=${uri}&ratio=720p`;
+function getShareLink() {
+    $('video').trigger('pause');
+    const link = window.__INIT_PROPS__['/share/video/:id']['videoData']['itemInfos']['video']['urls'][2].replace('watermark=1', 'watermark=0');
+    const href = `<video controls autoplay loop src=${link} class='video-player-pc'/>`;
+    $('.video-player-pc').replaceWith(href)
 }
 
 function getLink(isVm){
     if(!isVm){
+        $('video').trigger('pause');
         const url = location.href;
         const id = url.substr(url.lastIndexOf('/') + 1, 19);
         $.get(`https://m.tiktok.com/v/${id}.html`, function(data) {
-                const href = `<a class="count" style="color: #009ec8; cursor: pointer; text-decoration: underline;" href=${parseLink(data)} target="_blank">Без вотермарки</a>`;
-                $("div.count").after(href);
-                $("a.count").on('click', function() {
-                    stopVideo()
-                })
-            });
+            const href = `<video controls autoplay loop src=${parseLink(data)} class='video-player-pc'/>`;
+            $('.video-player-pc').replaceWith(href)
+        });
     }else{
-        const href = `<a id="caption" style="color: #009ec8; cursor: pointer; text-decoration: underline;" href=${parseLink(document)} target="_blank">Без вотермарки</a>`;
-        $("p#caption").after(href);
-        $("a#caption").on('click', function() {
-            stopVideo()
-        })
+        const href = `<video controls autoplay loop src=${parseLink(document)} style="overflow: hidden; margin-left: 0; width: 100%; height: 100%;"/>`;
+        $('#Video')
+            .empty()
+            .append(href);
     }
 }
