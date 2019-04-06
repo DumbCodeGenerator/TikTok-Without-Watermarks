@@ -30,7 +30,7 @@
         let config = { attributes: false, childList: true, characterData: false };
 
         // pass in the target node, as well as the observer options
-        observer.observe($('.ReactModalPortal').get(0), config);
+        observer.observe(document.body, config);
     }
 })();
 
