@@ -5,7 +5,6 @@
 // @description  Получает ссылку на видос без вотермарки
 // @author       DumbCodeGenerator
 // @match        *://*.tiktok.com/*
-// @match        *://*.muscdn.com/*
 // @require      http://code.jquery.com/jquery-latest.js
 // @grant        none
 // ==/UserScript==
@@ -13,9 +12,7 @@
 (function() {
     'use strict';
     const loc = location.href;
-    if(loc.includes('muscdn.com')){
-        $("video").prop("loop", true)
-    }else if(loc.includes('/share/video/')){
+    if(loc.includes('/share/video/')){
         getShareLink()
     }else if(loc.includes('m.tiktok.com/v/')){
         jQuery.noConflict(true);
