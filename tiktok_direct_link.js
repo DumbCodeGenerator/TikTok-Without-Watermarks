@@ -2,7 +2,7 @@
 // @name         TikTok Direct Link
 // @homepage     https://github.com/DumbCodeGenerator/TikTok_Direct_Link
 // @version      0.1
-// @description  Получает ссылку на видос без вотермарки
+// @description  Меняет видосы на сайте ТикТока на видосы без вотермарки
 // @author       DumbCodeGenerator
 // @match        *://*.tiktok.com/*
 // @require      http://code.jquery.com/jquery-latest.js
