@@ -14,7 +14,7 @@
     'use strict';
     const loc = location.href;
     if(loc.includes('muscdn.com')){
-        loopVideo()
+        $("video").prop("loop", true)
     }else if(loc.includes('/share/video/')){
         getShareLink()
     }else if(loc.includes('m.tiktok.com/v/')){
@@ -34,25 +34,8 @@
 
         // pass in the target node, as well as the observer options
         observer.observe($('.ReactModalPortal').get(0), config);
-
-        const pushState = history.pushState;
-        const replaceState = history.replaceState;
-        history.pushState = function () {
-            pushState.apply(history, arguments);
-
-        };
-        history.replaceState = function () {
-            replaceState.apply(history, arguments);
-            if(location.href.includes('/share/video/')){
-                getLink(false)
-            }
-        }
     }
 })();
-
-function loopVideo(){
-    $("video").prop("loop", true)
-}
 
 function parseLink(document){
     const docText = $(document).text();
