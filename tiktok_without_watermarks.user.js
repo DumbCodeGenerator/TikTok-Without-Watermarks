@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TikTok Without Watermarks
 // @homepage     https://github.com/DumbCodeGenerator/TikTok-Without-Watermarks
-// @version      0.3
+// @version      0.4
 // @description  Меняет видосы на сайте ТикТока на видосы без вотермарки
 // @author       DumbCodeGenerator
 // @run-at       document-start
@@ -11,9 +11,18 @@
 // @grant        none
 // ==/UserScript==
 
+let contextMenuIsHidden = true;
+
 (function() {
     'use strict';
     const loc = location.href;
+
+    $(window).on('click blur keyup mousewheel mousemove', function (e) {
+        if(!contextMenuIsHidden && e.type !== 'keyup' && e.type !== 'mousemove' || e.type === 'keyup' && (e.key === 'Escape' || e.which === 70 || e.keyCode === 70)) {
+            contextMenuIsHidden = true;
+        }
+    });
+
     if(loc.includes('/share/video/')){
         $(function () {
             replaceShareVideo()
@@ -24,6 +33,35 @@
             replaceVmVideo()
         })
     }else{
+        // создаём экземпляр MutationObserver
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if(mutation.addedNodes.length > 0) {
+                    if(mutation.addedNodes[0].classList.contains('video-box') || mutation.addedNodes[0].classList.contains('ReactModal__Overlay')) {
+                        $('.video-player-pc-video-proxy').remove();
+                        $('.loading').css('pointer-events', 'none');
+                        $('video').on('click contextmenu', function (e) {
+                            if(e.type === 'click' && contextMenuIsHidden) {
+                                e.target.paused ? e.target.play() : e.target.pause();
+                            }else if(e.type === 'contextmenu'){
+                                contextMenuIsHidden = false
+                            }
+                        });
+                    }else if(mutation.addedNodes[0].classList.contains('paly-btn')){
+                        $('.paly-btn').css('pointer-events', 'none')
+                    }
+                }
+            });
+        });
+
+        // конфигурация нашего observer:
+        const config = { childList: true, subtree: true };
+
+        $(function () {
+            // передаём в качестве аргументов целевой элемент и его конфигурацию
+            observer.observe($('.ReactModalPortal').get(0), config);
+        });
+
         xhook.after(function(request, response) {
             if(request.url.includes('/share/item/list')) {
                 const regexp = /"urls":\[(.*?)]/g;
@@ -52,7 +90,15 @@ function parseLink(document){
 
 function replaceShareVideo() {
     const link = window.__INIT_PROPS__['/share/video/:id']['videoData']['itemInfos']['video']['urls'][2].replace('watermark=1', 'watermark=0');
-    $('video').attr('src', link)
+    $('.video-player-pc-video-proxy').remove();
+    $('.loading').css('pointer-events', 'none');
+    $('video').attr('src', link).on('click contextmenu', function (e) {
+        if(e.type === 'click' && contextMenuIsHidden) {
+            e.target.paused ? e.target.play() : e.target.pause();
+        }else {
+            contextMenuIsHidden = false
+        }
+    });
 }
 
 function replaceVmVideo(){
