@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         TikTok Direct Link
-// @homepage     https://github.com/DumbCodeGenerator/TikTok_Direct_Link
+// @name         TikTok Without Watermarks
+// @homepage     https://github.com/DumbCodeGenerator/TikTok_Without_Watermarks
 // @version      0.2
 // @description  Меняет видосы на сайте ТикТока на видосы без вотермарки
 // @author       DumbCodeGenerator
