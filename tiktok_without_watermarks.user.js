@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TikTok Without Watermarks
 // @homepage     https://github.com/DumbCodeGenerator/TikTok-Without-Watermarks
-// @version      0.2
+// @version      0.3
 // @description  Меняет видосы на сайте ТикТока на видосы без вотермарки
 // @author       DumbCodeGenerator
 // @run-at       document-start
@@ -24,24 +24,17 @@
             replaceVmVideo()
         })
     }else{
-        let videoArray = {};
-        xhook.before(function (request) {
-            const url = request.url;
-            if(url.includes('/share/item/comment/list')){
-                const id = url.slice(url.indexOf('=') + 1, url.indexOf('&'));
-                const href = `<video controls autoplay loop src=${videoArray[id]} class='video-player-pc'/>`;
-                $('.video-player-pc').replaceWith(href)
-            }
-        });
         xhook.after(function(request, response) {
-            const url = request.url;
-            if(url.includes('/share/item/list')) {
-                const json = JSON.parse(response.data)['body']['itemListData'];
-                for (let i=0; i<json.length; i++) {
-                    const jsonValue = json[i];
-                    const key = jsonValue['itemInfos']['id'];
-                    videoArray[key] = jsonValue['itemInfos']['video']['urls'][2].replace('watermark=1', 'watermark=0')
+            if(request.url.includes('/share/item/list')) {
+                const regexp = /"urls":\[(.*?)]/g;
+                let text = response.text;
+                let match;
+                while ((match = regexp.exec(text)) !== null) {
+                    const urls = match[1];
+                    const split = urls.split(',');
+                    text = text.replace(urls, split[2].replace('watermark=1', 'watermark=0'));
                 }
+                response.text = text;
             }
         });
     }
@@ -58,10 +51,8 @@ function parseLink(document){
 }
 
 function replaceShareVideo() {
-    $('video').trigger('pause');
     const link = window.__INIT_PROPS__['/share/video/:id']['videoData']['itemInfos']['video']['urls'][2].replace('watermark=1', 'watermark=0');
-    const href = `<video controls autoplay loop src=${link} class='video-player-pc'/>`;
-    $('.video-player-pc').replaceWith(href)
+    $('video').attr('src', link)
 }
 
 function replaceVmVideo(){
