@@ -11,17 +11,9 @@
 // @grant        none
 // ==/UserScript==
 
-let contextMenuIsHidden = true;
-
 (function() {
     'use strict';
     const loc = location.href;
-
-    $(window).on('click blur keyup mousewheel mousemove', function (e) {
-        if(!contextMenuIsHidden && e.type !== 'keyup' && e.type !== 'mousemove' || e.type === 'keyup' && (e.key === 'Escape' || e.which === 70 || e.keyCode === 70)) {
-            contextMenuIsHidden = true;
-        }
-    });
 
     if(loc.includes('/share/video/')){
         $(function () {
@@ -39,14 +31,9 @@ let contextMenuIsHidden = true;
                 if(mutation.addedNodes.length > 0) {
                     if(mutation.addedNodes[0].classList.contains('video-box') || mutation.addedNodes[0].classList.contains('ReactModal__Overlay')) {
                         $('.video-player-pc-video-proxy').remove();
-                        $('.loading').css('pointer-events', 'none');
-                        $('video').on('click contextmenu', function (e) {
-                            if(e.type === 'click' && contextMenuIsHidden) {
-                                e.target.paused ? e.target.play() : e.target.pause();
-                            }else if(e.type === 'contextmenu'){
-                                contextMenuIsHidden = false
-                            }
-                        });
+                        $('.loading').remove();
+                        $('div.info').css('width', '295px');
+                        $('video').prop('controls', true)
                     }else if(mutation.addedNodes[0].classList.contains('paly-btn')){
                         $('.paly-btn').css('pointer-events', 'none')
                     }
@@ -91,14 +78,8 @@ function parseLink(document){
 function replaceShareVideo() {
     const link = window.__INIT_PROPS__['/share/video/:id']['videoData']['itemInfos']['video']['urls'][2].replace('watermark=1', 'watermark=0');
     $('.video-player-pc-video-proxy').remove();
-    $('.loading').css('pointer-events', 'none');
-    $('video').attr('src', link).on('click contextmenu', function (e) {
-        if(e.type === 'click' && contextMenuIsHidden) {
-            e.target.paused ? e.target.play() : e.target.pause();
-        }else {
-            contextMenuIsHidden = false
-        }
-    });
+    $('.loading').remove();
+    $('video').attr('src', link).prop('controls', true);
 }
 
 function replaceVmVideo(){
