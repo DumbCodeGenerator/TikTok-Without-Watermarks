@@ -56,10 +56,10 @@
                 let match;
                 while ((match = regexp.exec(text)) !== null) {
                     const urls = match[1];
-                    if(urls.includes('mpak-ssgc1.akamaized.net')){
+                    const split = urls.split(',');
+                    if(split.length <= 1){
                         continue
                     }
-                    const split = urls.split(',');
                     text = text.replace(urls, split[2].replace('watermark=1', 'watermark=0'));
                 }
                 response.text = text;
