@@ -25,7 +25,6 @@
             replaceVmVideo()
         })
     }else{
-        // создаём экземпляр MutationObserver
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if(mutation.addedNodes.length > 0) {
@@ -41,11 +40,9 @@
             });
         });
 
-        // конфигурация нашего observer:
         const config = { childList: true, subtree: true };
 
         $(function () {
-            // передаём в качестве аргументов целевой элемент и его конфигурацию
             observer.observe($('.ReactModalPortal').get(0), config);
         });
 
