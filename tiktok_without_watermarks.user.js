@@ -57,8 +57,8 @@
                 while ((match = regexp.exec(text)) !== null) {
                     const urls = match[1];
                     const split = urls.split(',');
-                    if(split.length <= 1){
-                        continue
+                    if(split.length < 3){
+                        continue;
                     }
                     text = text.replace(urls, split[2].replace('watermark=1', 'watermark=0'));
                 }
@@ -79,7 +79,7 @@ function parseLink(document){
 }
 
 function replaceShareVideo() {
-    const link = window.__INIT_PROPS__['/share/video/:id']['videoData']['itemInfos']['video']['urls'][2].replace('watermark=1', 'watermark=0');
+    const link = window['__INIT_PROPS__']['/share/video/:id']['videoData']['itemInfos']['video']['urls'][2].replace('watermark=1', 'watermark=0');
     $('.video-player-pc-video-proxy').remove();
     $('.loading').remove();
     $('video').attr('src', link).prop('controls', true);
