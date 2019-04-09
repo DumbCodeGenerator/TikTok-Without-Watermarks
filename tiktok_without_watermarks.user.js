@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TikTok Without Watermarks
 // @homepage     https://github.com/DumbCodeGenerator/TikTok-Without-Watermarks
-// @version      0.4
+// @version      0.5
 // @description  Меняет видосы на сайте ТикТока на видосы без вотермарки
 // @author       DumbCodeGenerator
 // @run-at       document-start
