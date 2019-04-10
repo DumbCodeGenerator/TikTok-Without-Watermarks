@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TikTok Without Watermarks
 // @homepage     https://github.com/DumbCodeGenerator/TikTok-Without-Watermarks
-// @version      0.5
+// @version      0.6
 // @description  Меняет видосы на сайте ТикТока на видосы без вотермарки
 // @author       DumbCodeGenerator
 // @run-at       document-start
@@ -68,11 +68,9 @@
 function parseLink(document){
     const docText = $(document).text();
 
-    const startIndex = docText.indexOf("play_addr") + 11;
-    const length = (docText.lastIndexOf("},\"cover\"") + 1) - startIndex;
-    const play_addr = docText.substr(startIndex, length);
-
-    return JSON.parse(play_addr)['url_list'][2];
+    const regexp = /"play_addr":{"url_list":\[(.*?)},/;
+    const result = docText.match(regexp)[1].split(',')[2];
+    return decodeURIComponent(result);
 }
 
 function replaceShareVideo() {
