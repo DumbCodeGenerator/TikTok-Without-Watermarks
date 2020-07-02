@@ -1,88 +1,55 @@
 // ==UserScript==
 // @name         TikTok Without Watermarks
 // @homepage     https://github.com/DumbCodeGenerator/TikTok-Without-Watermarks
-// @version      0.6
+// @version      0.7
 // @description  Меняет видосы на сайте ТикТока на видосы без вотермарки
 // @author       DumbCodeGenerator
-// @run-at       document-start
+// @run-at       document-end
 // @match        *://*.tiktok.com/*
-// @require      http://code.jquery.com/jquery-latest.js
-// @require      https://jpillora.com/xhook/dist/xhook.min.js
-// @grant        none
+// @require      https://code.jquery.com/jquery-3.5.1.slim.min.js
+// @grant        GM_xmlhttpRequest
+// @connect      tiktokcdn.com
 // ==/UserScript==
 
 (function() {
     'use strict';
     const loc = location.href;
+    const query = [];
 
-    if(loc.includes('/share/video/')){
-        $(function () {
-            replaceShareVideo()
-        })
-    }else if(loc.includes('m.tiktok.com/v/')){
-        $(function () {
-            jQuery.noConflict(true);
-            replaceVmVideo()
-        })
-    }else{
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if(mutation.addedNodes.length > 0) {
-                    if(mutation.addedNodes[0].classList.contains('video-box') || mutation.addedNodes[0].classList.contains('ReactModal__Overlay')) {
-                        $('.video-player-pc-video-proxy').remove();
-                        $('.loading').remove();
-                        $('div.info').css('width', '295px');
-                        $('video').prop('controls', true)
-                    }else if(mutation.addedNodes[0].classList.contains('paly-btn')){
-                        $('.paly-btn').css('pointer-events', 'none')
-                    }
+    const observer = new MutationObserver(function(mutations) {
+        const video = $('video.video-player.horizontal');
+        if(video.length === 0) return;
+        let link = video.attr('src');
+        if(!link.includes('/aweme/v1/play') && !query.includes(link)){
+            query.push(link);
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: link,
+                headers: {'Range':'bytes=12000-18000'},
+                onload: function (response) {
+                    const regex = /vid:(.{32})/;
+                    const videoId = response.responseText.match(regex)[1];
+                    const noWM = `https://api2-16-h2.musical.ly/aweme/v1/play/?video_id=${videoId}&vr_type=0&is_play_url=1&source=PackSourceEnum_PUBLISH&media_type=4&ratio=default&improve_bitrate=1`;
+                    video.attr('src', noWM);
+                    video.get(0).play();
+                    removeA(query, link);
                 }
-            });
-        });
+            })
+        }
+    });
 
-        const config = { childList: true, subtree: true };
+    const config = { childList: true, subtree: true };
 
-        $(function () {
-            observer.observe($('.ReactModalPortal').get(0), config);
-        });
-
-        xhook.after(function(request, response) {
-            if(request.url.includes('/share/item/list')) {
-                const regexp = /"urls":\[(.*?)]/g;
-                let text = response.text;
-                let match;
-                while ((match = regexp.exec(text)) !== null) {
-                    const urls = match[1];
-                    const split = urls.split(',');
-                    if(split.length < 3){
-                        continue;
-                    }
-                    text = text.replace(urls, split[2].replace('watermark=1', 'watermark=0'));
-                }
-                response.text = text;
-            }
-        });
-    }
+    observer.observe($('#main').get(0), config);
 })();
 
-function parseLink(document){
-    const docText = $(document).text();
-
-    const regexp = /"play_addr":{"url_list":\[(.*?)},/;
-    const result = docText.match(regexp)[1].split(',')[2];
-    return decodeURIComponent(result);
-}
-
-function replaceShareVideo() {
-    const link = window['__INIT_PROPS__']['/share/video/:id']['videoData']['itemInfos']['video']['urls'][2].replace('watermark=1', 'watermark=0');
-    $('.video-player-pc-video-proxy').remove();
-    $('.loading').remove();
-    $('video').attr('src', link).prop('controls', true);
-}
-
-function replaceVmVideo(){
-    const href = `<video controls autoplay loop src=${parseLink(document)} style="overflow: hidden; margin-left: 0; width: 100%; height: 100%;"/>`;
-    $('#Video')
-        .empty()
-        .append(href);
+function removeA(arr) {
+    let what, a = arguments, L = a.length, ax;
+    while (L > 1 && arr.length) {
+        what = a[--L];
+        while ((ax= arr.indexOf(what)) !== -1) {
+            arr.splice(ax, 1);
+        }
+    }
+    return arr;
 }
