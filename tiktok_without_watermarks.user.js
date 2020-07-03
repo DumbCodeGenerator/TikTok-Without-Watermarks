@@ -10,6 +10,7 @@
 // @require      https://cdn.jsdelivr.net/npm/file-saver@2.0.2/dist/FileSaver.min.js
 // @grant        GM_xmlhttpRequest
 // @connect      tiktokcdn.com
+// @connect      byteicdn.com
 // @connect      musical.ly
 // ==/UserScript==
 
